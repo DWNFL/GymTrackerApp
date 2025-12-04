@@ -4,6 +4,6 @@ namespace GymTrackerApp.Services;
 
 public interface IWorkoutService
 {
-    Task<List<WorkoutSession>> GetSessionsAsync();
-    Task SaveSessionAsync(WorkoutSession session);
+    Task<List<Workout>> GetWorkoutAsync();
+    Task SaveWorkoutAsync(Workout session);
 }

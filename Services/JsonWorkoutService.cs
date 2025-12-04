@@ -18,15 +18,15 @@ public class JsonWorkoutService : IWorkoutService
             ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "workouts.json");
     }
 
-    public async Task<List<WorkoutSession>> GetSessionsAsync()
+    public async Task<List<Workout>> GetWorkoutAsync()
     {
         if (!File.Exists(_filePath))
-            return new List<WorkoutSession>();
+            return new List<Workout>();
 
         try
         {
             string? json = await File.ReadAllTextAsync(_filePath);
-            var list = JsonSerializer.Deserialize<List<WorkoutSession>>(json, _jsonOptions);
+            var list = JsonSerializer.Deserialize<List<Workout>>(json, _jsonOptions);
 
             var valid = list;
             
@@ -36,11 +36,11 @@ public class JsonWorkoutService : IWorkoutService
         }
         catch (Exception e)
         {
-            return new List<WorkoutSession>();
+            return new List<Workout>();
         }
     }
 
-    public async Task SaveSessionAsync(WorkoutSession session)
+    public async Task SaveWorkoutAsync(Workout session)
     {
         string? dir = Path.GetDirectoryName(_filePath);
         if (string.IsNullOrWhiteSpace(dir))

@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Code\\C#\\GymTrackerApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8C25FEB7-0410-4AD8-92DD-FEC19C4199B3}|GymTrackerApp.csproj|d:\\code\\c#\\gymtrackerapp\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8C25FEB7-0410-4AD8-92DD-FEC19C4199B3}|GymTrackerApp.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C25FEB7-0410-4AD8-92DD-FEC19C4199B3}|GymTrackerApp.csproj|d:\\code\\c#\\gymtrackerapp\\views\\workoutslistingview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8C25FEB7-0410-4AD8-92DD-FEC19C4199B3}|GymTrackerApp.csproj|solutionrelative:views\\workoutslistingview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "D:\\Code\\C#\\GymTrackerApp\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "D:\\Code\\C#\\GymTrackerApp\\MainWindow.xaml*",
+              "RelativeToolTip": "MainWindow.xaml*",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-04T19:02:02.939Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WorkoutsListingView.xaml",
+              "DocumentMoniker": "D:\\Code\\C#\\GymTrackerApp\\Views\\WorkoutsListingView.xaml",
+              "RelativeDocumentMoniker": "Views\\WorkoutsListingView.xaml",
+              "ToolTip": "D:\\Code\\C#\\GymTrackerApp\\Views\\WorkoutsListingView.xaml",
+              "RelativeToolTip": "Views\\WorkoutsListingView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-04T19:01:46.699Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
