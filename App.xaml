@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:GymTrackerApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+         <Style x:Key="Header" TargetType="TextBlock">
+             <Setter Property="FontSize" Value="30"/>
+         </Style>
     </Application.Resources>
 </Application>

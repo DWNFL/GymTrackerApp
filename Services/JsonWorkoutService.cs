@@ -30,7 +30,7 @@ public class JsonWorkoutService : IWorkoutService
 
             var valid = list;
             
-            // Добавить доп. валидацию данных;
+            // Добавить доп. валидацию данных при повреждении файлов json;
             return valid;
 
         }
