@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GymTrackerApp.Views.WorkoutsListingView"
+﻿<UserControl x:Class="GymTrackerApp.Views.WorkoutsHistoryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,7 +19,7 @@
             HorizontalAlignment="Center"
             Style="{StaticResource Header}"
             Margin="0 40 0 0"/>
-        <ListView Grid.Row="1" Margin="100 30">
+        <ListView Grid.Row="1" Margin="50 30">
             <ListView.Items>
                 <!-- Просто любые объекты, даже строки – главное, чтобы были элементы -->
                 <sys:String>1</sys:String>
@@ -33,7 +33,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="0 0 0 10" Padding="10" Background="#202020">
+                    <Border Margin="0 0 0 10" Padding="10" Background="#202020" CornerRadius="10">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>

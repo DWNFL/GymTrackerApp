@@ -5,7 +5,7 @@ namespace GymTrackerApp.ViewModels;
 public class ExerciseViewModel : ViewModelBase
 {
     private readonly Exercise _exercise;
-
+    
     public ExerciseViewModel(Exercise exercise)
     {
         _exercise = exercise;
@@ -24,17 +24,15 @@ public class ExerciseViewModel : ViewModelBase
         }
     }
     
-    public string MuscleGroupDisplay => _exercise.MuscleGroup switch
+    public string MuscleGroup 
     {
-        MuscleGroup.Chest => "Грудь",
-        MuscleGroup.Back => "Спина",
-        MuscleGroup.Legs => "Ноги",
-        MuscleGroup.Shoulders => "Плечи",
-        MuscleGroup.Arms => "Руки",
-        MuscleGroup.Core => "Кор",
-        MuscleGroup.FullBody => "Все тело",
-        _ => "Другое"
-    };
+        get => MuscleGroupExtensions.ToRussian(_exercise.MuscleGroup);
+        set
+        {
+            _exercise.MuscleGroup = MuscleGroupExtensions.FromRussian(value);
+            OnPropertyChanged(nameof(MuscleGroup));
+        }
+    }
 
     public string? Description
     {

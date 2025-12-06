@@ -12,5 +12,7 @@ public class Workout
 
     public List<WorkoutExercise> Exercises { get; set; } = new();
     
-    public bool IsTemplate { get; set; }
+    // public bool IsTemplate { get; set; }
+    
+    public Workout() {}
 }

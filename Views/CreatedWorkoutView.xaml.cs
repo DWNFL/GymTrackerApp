@@ -2,9 +2,9 @@
 
 namespace GymTrackerApp.Views;
 
-public partial class CreatedWorkoutView : UserControl
+public partial class CreatingWorkoutView : UserControl
 {
-    public CreatedWorkoutView()
+    public CreatingWorkoutView()
     {
         InitializeComponent();
     }

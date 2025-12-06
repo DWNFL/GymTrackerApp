@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="600">
         <Grid>
-                <views:WorkoutsListingView/>
+                <views:WorkoutsHistoryView/>
         </Grid>
 </Window>
