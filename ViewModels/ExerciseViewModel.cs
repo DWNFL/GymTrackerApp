@@ -46,5 +46,6 @@ public class ExerciseViewModel : ViewModelBase
             }
         }
     }
+    public Guid Id => _exercise.Id;
     
 }

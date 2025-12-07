@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:local="clr-namespace:GymTrackerApp.Views"
+             xmlns:vm="clr-namespace:GymTrackerApp.ViewModels"
              mc:Ignorable="d"
-             
+             d:DataContext="{d:DesignInstance vm:WorkoutsHistoryViewModel}"
              d:DesignHeight="400" d:DesignWidth="600">
     <Grid>
         <Grid.RowDefinitions>
@@ -19,13 +18,9 @@
             HorizontalAlignment="Center"
             Style="{StaticResource Header}"
             Margin="0 40 0 0"/>
-        <ListView Grid.Row="1" Margin="50 30">
-            <ListView.Items>
-                <!-- Просто любые объекты, даже строки – главное, чтобы были элементы -->
-                <sys:String>1</sys:String>
-                <sys:String>2</sys:String>
-                <sys:String>3</sys:String>
-            </ListView.Items>
+        <ListView Grid.Row="1"
+                  Margin="50 30"
+                  ItemsSource="{Binding Workouts}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -47,14 +42,14 @@
                                 
                             <TextBlock Grid.Row="0"
                                        Grid.Column="0"
-                                       Text="Название тренировки"
+                                       Text="{Binding Name}"
                                        FontSize="16"
                                        FontWeight="Bold"
                                        Foreground="White"/>
                                 
                             <TextBlock Grid.Row="0"
                                        Grid.Column="1"
-                                       Text="11.12.2025"
+                                       Text="{Binding Date, StringFormat={}{0:dd.MM.yyyy}}"
                                        VerticalAlignment="Center"
                                        Foreground="#CCCCCC"/>
                                 
@@ -63,10 +58,12 @@
                                         Grid.ColumnSpan="2"
                                         Orientation="Horizontal"
                                         Margin="0 6 0 6">
-                                <TextBlock Text="Сеты: 12"
+                                
+                                <TextBlock Text="{Binding TotalSets, StringFormat=Сеты: {0}}"
                                            Foreground="#DDDDDD"
                                            Margin="0 0 16 0"/>
-                                <TextBlock Text="Длительность: 2:12:03"
+                                
+                                <TextBlock Text="{Binding Duration, StringFormat=Длительность: {0:hh\\:mm\\:ss}}"
                                            Foreground="#DDDDDD"/>
                             </StackPanel>
                         </Grid>
