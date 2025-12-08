@@ -7,6 +7,21 @@
         xmlns:local="clr-namespace:GymTrackerApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="600">
-        <Grid>
-        </Grid>
+        <DockPanel>
+
+                <!-- Панель вкладок -->
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                        <Button Content="История"
+                                Command="{Binding ShowHistoryCommand}" Margin="5"/>
+
+                        <Button Content="Типы упражнений"
+                                Command="{Binding ShowExercisesCommand}" Margin="5"/>
+
+                        <Button Content="Графики"
+                                Command="{Binding ShowChartsCommand}" Margin="5"/>
+                </StackPanel>
+
+                <!-- Текущее содержимое -->
+                <ContentControl Content="{Binding CurrentViewModel}" />
+        </DockPanel>
 </Window>

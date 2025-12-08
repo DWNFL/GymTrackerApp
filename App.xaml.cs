@@ -17,16 +17,18 @@ public partial class App : Application
     
     protected override void OnStartup(StartupEventArgs e)
     {
+        base.OnStartup(e);
+
         var (exercises, workouts) = TestDataFactory.Create();
 
         _exerciseStore.SetExercises(exercises);
         _workoutStore.SetWorkouts(workouts);
-    
-        var vm = new WorkoutViewModel(new Workout(), _exerciseStore.Exercises);
 
-        var window = new TestWindow
+        var mainVm = new MainViewModel();
+
+        var window = new MainWindow
         {
-            DataContext = vm
+            DataContext = mainVm
         };
 
         window.Show();

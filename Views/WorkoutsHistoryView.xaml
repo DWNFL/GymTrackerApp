@@ -10,6 +10,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>        
         <TextBlock
@@ -18,8 +19,15 @@
             HorizontalAlignment="Center"
             Style="{StaticResource Header}"
             Margin="0 40 0 0"/>
-        <ListView Grid.Row="1"
-                  Margin="50 30"
+        <Button Grid.Row="1"
+                Content="Добавить тренировку"
+                MinHeight="25"
+                HorizontalAlignment="Right"
+                Margin="0 0 50 0"
+                Command="{Binding DataContext.ShowCreateWorkoutCommand,
+                          RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ListView Grid.Row="2"
+                  Margin="50 10 50 30"
                   ItemsSource="{Binding Workouts}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">

@@ -1,9 +1,19 @@
 ﻿<Application x:Class="GymTrackerApp.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:GymTrackerApp">
+             xmlns:local="clr-namespace:GymTrackerApp"
+             xmlns:views="clr-namespace:GymTrackerApp.Views"
+             xmlns:vm="clr-namespace:GymTrackerApp.ViewModels">
     <Application.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <DataTemplate DataType="{x:Type vm:WorkoutsHistoryViewModel}">
+            <views:WorkoutsHistoryView />
+        </DataTemplate>
+
+        <!-- Создание тренировки -->
+        <DataTemplate DataType="{x:Type vm:CreatingWorkoutViewModel}">
+            <views:WorkoutView />
+        </DataTemplate>
         <Style x:Key="Header" TargetType="TextBlock">
              <Setter Property="FontSize" Value="30"/>
          </Style>
