@@ -3,25 +3,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:GymTrackerApp.Views"
-        xmlns:local="clr-namespace:GymTrackerApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="600">
-        <DockPanel>
+        Title="GymTracker" Height="600" Width="700">
 
-                <!-- Панель вкладок -->
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
-                        <Button Content="История"
-                                Command="{Binding ShowHistoryCommand}" Margin="5"/>
+    <DockPanel>
 
-                        <Button Content="Типы упражнений"
-                                Command="{Binding ShowExercisesCommand}" Margin="5"/>
+        <Border DockPanel.Dock="Top" Background="#111" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="История"
+                        Margin="0 0 10 0"
+                        Padding="12,6"
+                        Command="{Binding ShowHistoryCommand}"/>
 
-                        <Button Content="Графики"
-                                Command="{Binding ShowChartsCommand}" Margin="5"/>
-                </StackPanel>
+                <Button Content="Новая тренировка"
+                        Padding="12,6"
+                        Command="{Binding StartNewWorkoutCommand}"/>
+            </StackPanel>
+        </Border>
 
-                <!-- Текущее содержимое -->
-                <ContentControl Content="{Binding CurrentViewModel}" />
-        </DockPanel>
+        <ContentControl Content="{Binding CurrentViewModel}" />
+    </DockPanel>
 </Window>

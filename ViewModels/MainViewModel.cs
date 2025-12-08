@@ -1,36 +1,52 @@
-﻿using GymTrackerApp.Services;
-using GymTrackerApp.Commands;
+﻿using GymTrackerApp.Commands;
+using GymTrackerApp.Models;
+using GymTrackerApp.Services;
+
 namespace GymTrackerApp.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    private readonly WorkoutStore _workoutStore = new();
-    private readonly ExerciseStore _exerciseStore = new();
+    private readonly WorkoutStore _workoutStore;
+    private readonly ExerciseStore _exerciseStore;
+
     private ViewModelBase _currentViewModel;
     public ViewModelBase CurrentViewModel
     {
         get => _currentViewModel;
-        set
+        private set
         {
             _currentViewModel = value;
             OnPropertyChanged(nameof(CurrentViewModel));
         }
     }
+
     public BaseCommand ShowHistoryCommand { get; }
-    public BaseCommand ShowCreateWorkoutCommand { get; }
-    public BaseCommand ShowExercisesCommand { get; }
-    public BaseCommand ShowChartsCommand { get; }
-    
-    public MainViewModel()
+    public BaseCommand StartNewWorkoutCommand { get; }
+
+    public MainViewModel(WorkoutStore workoutStore, ExerciseStore exerciseStore)
     {
-        
-        CurrentViewModel = new WorkoutsHistoryViewModel(_workoutStore, _exerciseStore, this);
+        _workoutStore = workoutStore;
+        _exerciseStore = exerciseStore;
 
-        ShowHistoryCommand = new BaseCommand(_ =>
-            CurrentViewModel = new WorkoutsHistoryViewModel(_workoutStore, _exerciseStore, this));
+        ShowHistoryCommand = new BaseCommand(_ => ShowHistory());
+        StartNewWorkoutCommand = new BaseCommand(_ => StartNewWorkout());
 
-        ShowCreateWorkoutCommand = new BaseCommand(_ =>
-            CurrentViewModel = new CreatingWorkoutViewModel(_exerciseStore));   
+        ShowHistory();
+    }
 
+    private void ShowHistory()
+    {
+        CurrentViewModel = new WorkoutsHistoryViewModel(_workoutStore, _exerciseStore);
+    }
+
+    private void StartNewWorkout()
+    {
+        CurrentViewModel = new WorkoutViewModel(
+            new Workout { Date = DateTime.Now },
+            _exerciseStore.Exercises,
+            workoutStore: _workoutStore,
+            onFinished: ShowHistory,
+            startTimer: true,
+            exerciseStore: _exerciseStore);
     }
 }

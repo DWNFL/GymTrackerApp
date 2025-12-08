@@ -11,7 +11,7 @@ public class JsonWorkoutService : IWorkoutService
     {
         WriteIndented = true
     };
-    
+
     public JsonWorkoutService(string? jsonFilePath = null)
     {
         _filePath = jsonFilePath
@@ -25,16 +25,10 @@ public class JsonWorkoutService : IWorkoutService
 
         try
         {
-            string? json = await File.ReadAllTextAsync(_filePath);
-            var list = JsonSerializer.Deserialize<List<Workout>>(json, _jsonOptions);
-
-            var valid = list;
-            
-            // Добавить доп. валидацию данных при повреждении файлов json;
-            return valid;
-
+            var json = await File.ReadAllTextAsync(_filePath);
+            return JsonSerializer.Deserialize<List<Workout>>(json, _jsonOptions) ?? new List<Workout>();
         }
-        catch (Exception e)
+        catch
         {
             return new List<Workout>();
         }
@@ -42,11 +36,17 @@ public class JsonWorkoutService : IWorkoutService
 
     public async Task SaveWorkoutAsync(Workout session)
     {
-        string? dir = Path.GetDirectoryName(_filePath);
-        if (string.IsNullOrWhiteSpace(dir))
+        var dir = Path.GetDirectoryName(_filePath);
+        if (!string.IsNullOrWhiteSpace(dir))
             Directory.CreateDirectory(dir);
 
-        string json = JsonSerializer.Serialize(session, _jsonOptions);
+        var workouts = await GetWorkoutAsync();
+
+        var idx = workouts.FindIndex(w => w.Id == session.Id);
+        if (idx >= 0) workouts[idx] = session;
+        else workouts.Add(session);
+
+        var json = JsonSerializer.Serialize(workouts, _jsonOptions);
         await File.WriteAllTextAsync(_filePath, json);
     }
 }

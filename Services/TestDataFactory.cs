@@ -40,8 +40,8 @@ public static class TestDataFactory
         var workout2 = new Workout
         {
             Name = "Лёгкая тренировка",
-            Date = DateTime.Today.AddDays(-1),     // вчера
-            Duration = TimeSpan.FromMinutes(45),   // 45 минут
+            Date = DateTime.Today.AddDays(-1),     
+            Duration = TimeSpan.FromMinutes(45),   
             Exercises = new List<WorkoutExercise>
             {
                 new WorkoutExercise

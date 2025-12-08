@@ -1,37 +1,92 @@
-﻿using System.Windows;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using GymTrackerApp.Models;
-using GymTrackerApp.ViewModels;
 using GymTrackerApp.Services;
-using GymTrackerApp.Views;
-using WorkoutViewModel = GymTrackerApp.ViewModels.WorkoutViewModel;
+using GymTrackerApp.ViewModels;
 
 namespace GymTrackerApp;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
-    WorkoutStore _workoutStore =  new WorkoutStore();
-    ExerciseStore _exerciseStore = new ExerciseStore();
-    
-    protected override void OnStartup(StartupEventArgs e)
+    private readonly WorkoutStore _workoutStore = new();
+    private readonly ExerciseStore _exerciseStore = new();
+
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
-        var (exercises, workouts) = TestDataFactory.Create();
+        try
+        {
+            await LoadDataAsync();
+
+            var mainVm = new MainViewModel(_workoutStore, _exerciseStore);
+
+            var window = new MainWindow
+            {
+                DataContext = mainVm
+            };
+
+            window.Show();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ошибка запуска приложения: {ex.Message}", "Ошибка",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown();
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var workoutService = new JsonWorkoutService();
+        var exerciseService = new JsonExersiceService();
+
+        var exercises = await exerciseService.GetExercisesAsync();
+        var workouts = await workoutService.GetWorkoutAsync();
+
+        if (exercises.Count == 0 && workouts.Count == 0)
+        {
+            var (testExercises, testWorkouts) = TestDataFactory.Create();
+            exercises = testExercises;
+            workouts = testWorkouts;
+
+            await exerciseService.SaveExercisesAsync(exercises);
+            foreach (var w in workouts)
+                await workoutService.SaveWorkoutAsync(w);
+        }
+
+        var knownIds = exercises.Select(x => x.Id).ToHashSet();
+
+        var idsFromWorkouts = workouts
+            .SelectMany(w => w.Exercises)
+            .Select(ex => ex.ExercisesId)
+            .Where(id => id != Guid.Empty)
+            .Distinct()
+            .ToList();
+
+        bool exercisesChanged = false;
+
+        foreach (var id in idsFromWorkouts)
+        {
+            if (knownIds.Contains(id)) continue;
+
+            exercises.Add(new Exercise
+            {
+                Id = id,
+                Name = $"⚠ ВОССТАНОВЛЕНО ({id.ToString()[..8]})",
+                MuscleGroup = MuscleGroup.Other
+            });
+
+            knownIds.Add(id);
+            exercisesChanged = true;
+        }
+
+        if (exercisesChanged)
+            await exerciseService.SaveExercisesAsync(exercises);
 
         _exerciseStore.SetExercises(exercises);
         _workoutStore.SetWorkouts(workouts);
-
-        var mainVm = new MainViewModel();
-
-        var window = new MainWindow
-        {
-            DataContext = mainVm
-        };
-
-        window.Show();
     }
-
 }

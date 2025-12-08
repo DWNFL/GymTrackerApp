@@ -3,6 +3,8 @@ using GymTrackerApp.Commands;
 using GymTrackerApp.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace GymTrackerApp.ViewModels;
@@ -10,82 +12,281 @@ namespace GymTrackerApp.ViewModels;
 public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel>
 {
     private readonly Workout _workout;
+    private readonly WorkoutStore? _workoutStore;
+    private readonly ExerciseStore? _exerciseStore;
+    private readonly Action? _onFinished;
+    private readonly bool _startTimer;
+
     private DateTime _startTime;
-    private DispatcherTimer _timer;
+    private DispatcherTimer? _timer;
+
+    public Workout Model => _workout;                 // ✅ нужно для открытия из истории
+    public bool IsReadOnly { get; }                   // ✅ режим просмотра
+
     public ObservableCollection<WorkoutExerciseViewModel> WorkoutExercises { get; }
     public ObservableCollection<ExerciseViewModel> ExerciseDefinitions { get; }
-    public BaseCommand StartAddExerciseCommand { get; } 
+
+    public ObservableCollection<object> ExercisePickerItems { get; } = new();
+
+    private object? _selectedExercisePickerItem;
+    public object? SelectedExercisePickerItem
+    {
+        get => _selectedExercisePickerItem;
+        set
+        {
+            if (_selectedExercisePickerItem == value) return;
+            _selectedExercisePickerItem = value;
+            OnPropertyChanged(nameof(SelectedExercisePickerItem));
+
+            if (IsReadOnly) return;
+
+            if (value is AddCustomExercisePickerItem)
+            {
+                _selectedExercisePickerItem = null;
+                OnPropertyChanged(nameof(SelectedExercisePickerItem));
+                return;
+            }
+
+            if (IsAddingExercise && value is ExerciseViewModel evm)
+            {
+                AddExerciseFromDefinition(evm);
+
+                IsComboOpen = false;
+                _selectedExercisePickerItem = null;
+                OnPropertyChanged(nameof(SelectedExercisePickerItem));
+            }
+        }
+    }
+
+    public BaseCommand StartAddExerciseCommand { get; }
     public BaseCommand RemoveExerciseCommand { get; }
     public BaseCommand FinishCommand { get; }
     public BaseCommand DeleteCommand { get; }
-    
-    public WorkoutViewModel(Workout workout, IEnumerable<Exercise> exerciseDefinitons)
+    public BaseCommand AddCustomExerciseCommand { get; }
+
+    public WorkoutViewModel(
+        Workout workout,
+        IEnumerable<Exercise> exerciseDefinitions,
+        WorkoutStore? workoutStore = null,
+        Action? onFinished = null,
+        bool startTimer = true,
+        ExerciseStore? exerciseStore = null,
+        bool isReadOnly = false)
     {
         _workout = workout;
+        _workoutStore = workoutStore;
+        _onFinished = onFinished;
+        _startTimer = startTimer;
+        _exerciseStore = exerciseStore;
+        IsReadOnly = isReadOnly;
+
+        if (_workout.Date == default)
+            _workout.Date = DateTime.Now;
 
         WorkoutExercises = new ObservableCollection<WorkoutExerciseViewModel>();
         ExerciseDefinitions = new ObservableCollection<ExerciseViewModel>(
-            exerciseDefinitons.Select(e => new ExerciseViewModel(e)));
+            exerciseDefinitions.Select(e => new ExerciseViewModel(e)));
 
         foreach (var exercise in workout.Exercises)
         {
-            var definition = exerciseDefinitons.First(x => x.Id == exercise.ExercisesId);
-            var definitionViewModel = new ExerciseViewModel(definition);
-            var workoutExercise = new WorkoutExerciseViewModel(exercise, definitionViewModel);
-            
+            var defVm = ExerciseDefinitions.FirstOrDefault(x => x.Id == exercise.ExercisesId)
+                        ?? ExerciseDefinitions.First();
+
+            var workoutExercise = new WorkoutExerciseViewModel(exercise, defVm);
             AddWithEvents(WorkoutExercises, workoutExercise, ExerciseChanged);
         }
-        
-        _startTime = DateTime.Now;
 
-        _timer = new DispatcherTimer()
+        RebuildExercisePickerItems();
+
+        if (_startTimer && !IsReadOnly)
         {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _timer.Tick += (_, _) => OnPropertyChanged(nameof(CurrentDuration));
-        _timer.Start();
-        
+            _startTime = DateTime.Now - _workout.Duration;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Tick += (_, _) => OnPropertyChanged(nameof(CurrentDuration));
+            _timer.Start();
+        }
+        else
+        {
+            _startTime = DateTime.Now;
+        }
+
         StartAddExerciseCommand = new BaseCommand(_ =>
         {
+            if (IsReadOnly) return;
+
             IsAddingExercise = true;
-            IsComboOpen = true; 
+            SelectedExercisePickerItem = null;
+
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                IsComboOpen = true;
+            }), DispatcherPriority.Background);
         });
+
+
         RemoveExerciseCommand = new BaseCommand(workoutExercise =>
         {
-            if (workoutExercise is WorkoutExerciseViewModel workoutExerciseViewModel)
-                RemoveExercise(workoutExerciseViewModel);
-        });
-        FinishCommand = new BaseCommand(_ =>
-        {
-            FinishWorkout();             // остановим таймер, зафиксируем Duration
+            if (workoutExercise is WorkoutExerciseViewModel w)
+                RemoveExercise(w);
+        }, _ => !IsReadOnly);
 
-            var service = new JsonWorkoutService();
-            _ = service.SaveWorkoutAsync(_workout);   // простое сохранение в json
-        });
-        
+        AddCustomExerciseCommand = new BaseCommand(_ => AddCustomExercise(), _ => !IsReadOnly);
+
+        FinishCommand = new BaseCommand(async _ =>
+        {
+            if (IsReadOnly) return;
+
+            if (IsWorkoutEmpty())
+            {
+                MessageBox.Show("Нельзя сохранить пустую тренировку. Добавь упражнение и хотя бы один сет.",
+                    "Сохранение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dlg = new GymTrackerApp.Views.FinishWorkoutDialog(
+                string.IsNullOrWhiteSpace(Name) ? $"Тренировка {DateTime.Now:dd.MM.yyyy HH:mm}" : Name,
+                Description)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            if (dlg.ShowDialog() != true)
+                return;
+
+            Name = dlg.WorkoutName;
+            Description = string.IsNullOrWhiteSpace(dlg.WorkoutDescription) ? null : dlg.WorkoutDescription;
+
+            FinishWorkout();
+
+            try
+            {
+                if (_workoutStore != null && !_workoutStore.Workouts.Any(w => w.Id == _workout.Id))
+                    _workoutStore.AddWorkout(_workout);
+
+                var service = new JsonWorkoutService();
+                await service.SaveWorkoutAsync(_workout);
+
+                _onFinished?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }, _ => !IsReadOnly);
+
         DeleteCommand = new BaseCommand(_ =>
         {
             _workout.Exercises.Clear();
             WorkoutExercises.Clear();
 
             Name = string.Empty;
+            Description = null;
             Date = DateTime.Now;
             Duration = TimeSpan.Zero;
 
             _startTime = DateTime.Now;
-        });
 
+            if (_startTimer && !IsReadOnly)
+            {
+                _timer?.Stop();
+                _timer?.Start();
+                OnPropertyChanged(nameof(CurrentDuration));
+            }
+
+            OnPropertyChanged(nameof(TotalWeight));
+            OnPropertyChanged(nameof(TotalSets));
+        }, _ => !IsReadOnly);
     }
-    
+
+    private void RebuildExercisePickerItems()
+    {
+        ExercisePickerItems.Clear();
+        ExercisePickerItems.Add(new AddCustomExercisePickerItem());
+        foreach (var e in ExerciseDefinitions.OrderBy(x => x.Name))
+            ExercisePickerItems.Add(e);
+
+        OnPropertyChanged(nameof(ExercisePickerItems));
+    }
+
+    private bool IsWorkoutEmpty()
+    {
+        if (_workout.Exercises.Count == 0) return true;
+
+        return !_workout.Exercises.Any(ex =>
+            ex.Sets != null &&
+            ex.Sets.Any(s => s.Reps > 0 && s.Weight >= 0));
+    }
+
+    private async void AddCustomExercise()
+    {
+        IsComboOpen = false;
+        IsAddingExercise = false;
+        SelectedExercisePickerItem = null;
+
+        if (IsReadOnly) return;
+
+        if (_exerciseStore == null)
+        {
+            MessageBox.Show("ExerciseStore не передан в WorkoutViewModel — нельзя сохранить своё упражнение.",
+                "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var dlg = new GymTrackerApp.Views.AddExerciseDialog
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (dlg.ShowDialog() != true)
+        {
+            IsComboOpen = false;
+            return;
+        }
+
+        var name = (dlg.ExerciseName ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            MessageBox.Show("Название упражнения не может быть пустым.", "Ошибка",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var existing = _exerciseStore.Exercises
+            .FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+        Exercise exercise;
+        if (existing != null)
+        {
+            exercise = existing;
+        }
+        else
+        {
+            exercise = new Exercise(name, dlg.SelectedMuscleGroup);
+            _exerciseStore.AddExercise(exercise);
+
+            var exService = new JsonExersiceService();
+            await exService.SaveExercisesAsync(_exerciseStore.Exercises);
+
+            ExerciseDefinitions.Add(new ExerciseViewModel(exercise));
+            RebuildExercisePickerItems();
+        }
+
+        var vm = ExerciseDefinitions.First(x => x.Id == exercise.Id);
+        AddExerciseFromDefinition(vm);
+
+        IsAddingExercise = false;
+        IsComboOpen = false;
+    }
+
     public double TotalWeight =>
-        WorkoutExercises.Sum(e =>
-            e.Sets.Sum(s => s.Weight * s.Reps));
-    
+        WorkoutExercises.Sum(e => e.Sets.Sum(s => s.Weight * s.Reps));
+
     public int TotalSets =>
         WorkoutExercises.Sum(e => e.Sets.Count);
-    
-    public TimeSpan CurrentDuration => DateTime.Now - _startTime;
-    
+
+    public TimeSpan CurrentDuration => (_startTimer && !IsReadOnly) ? (DateTime.Now - _startTime) : Duration;
+
     public TimeSpan Duration
     {
         get => _workout.Duration;
@@ -101,21 +302,23 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
 
     public void FinishWorkout()
     {
-        _timer.Stop();
-        Duration = CurrentDuration;
+        if (_startTimer && !IsReadOnly) _timer?.Stop();
+        Duration = DateTime.Now - _startTime;
+        OnPropertyChanged(nameof(CurrentDuration));
     }
-    
-    private bool _isAddingExercise;
 
+    private bool _isAddingExercise;
     public bool IsAddingExercise
     {
         get => _isAddingExercise;
         set
         {
+            if (_isAddingExercise == value) return;
             _isAddingExercise = value;
             OnPropertyChanged(nameof(IsAddingExercise));
         }
     }
+
     private bool _isComboOpen;
     public bool IsComboOpen
     {
@@ -125,33 +328,12 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
             if (_isComboOpen == value) return;
             _isComboOpen = value;
             OnPropertyChanged(nameof(IsComboOpen));
-            
-            if(!_isComboOpen && SelectedExerciseDefinition == null)
-                IsAddingExercise =  false;
-        }
-    }
-    
-    private ExerciseViewModel? _selectedExerciseDefinition;
-    public ExerciseViewModel? SelectedExerciseDefinition
-    {
-        get =>  _selectedExerciseDefinition;
-        set
-        {
-            if (_selectedExerciseDefinition == value) return;
-            _selectedExerciseDefinition = value;
-            OnPropertyChanged(nameof(SelectedExerciseDefinition));
 
-            if (IsAddingExercise && value != null)
-            {
-                AddExerciseFromDefinition(value);
-
+            if (!_isComboOpen && SelectedExercisePickerItem == null)
                 IsAddingExercise = false;
-
-                _selectedExerciseDefinition = null;
-                OnPropertyChanged(nameof(SelectedExerciseDefinition));
-            }
         }
     }
+
     private void AddExerciseFromDefinition(ExerciseViewModel definition)
     {
         var exercise = new WorkoutExercise
@@ -164,7 +346,6 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
 
         var exerciseViewModel = new WorkoutExerciseViewModel(exercise, definition);
         AddWithEvents(WorkoutExercises, exerciseViewModel, ExerciseChanged);
-        IsComboOpen = false;
     }
 
     private void RemoveExercise(WorkoutExerciseViewModel workoutExerciseViewModel)
@@ -172,7 +353,7 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
         _workout.Exercises.Remove(workoutExerciseViewModel.Model);
         RemoveWithEvents(WorkoutExercises, workoutExerciseViewModel, ExerciseChanged);
     }
-    
+
     public DateTime Date
     {
         get => _workout.Date;
@@ -182,11 +363,12 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
             OnPropertyChanged(nameof(Date));
         }
     }
+
     public string Name
     {
-        get =>  _workout.Name;
+        get => _workout.Name;
         set
-        {    
+        {
             if (_workout.Name != value)
             {
                 _workout.Name = value;
@@ -194,6 +376,20 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
             }
         }
     }
+
+    public string? Description
+    {
+        get => _workout.Description;
+        set
+        {
+            if (_workout.Description != value)
+            {
+                _workout.Description = value;
+                OnPropertyChanged(nameof(Description));
+            }
+        }
+    }
+
     private void ExerciseChanged(object? sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(nameof(TotalWeight));

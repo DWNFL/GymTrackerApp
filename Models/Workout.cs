@@ -6,12 +6,13 @@ public class Workout
 
     public string Name { get; set; } = string.Empty;
 
+    public string? Description { get; set; }
+
     public TimeSpan Duration { get; set; }
     public DateTime Date { get; set; }
 
     public List<WorkoutExercise> Exercises { get; set; } = new();
     
-    // public bool IsTemplate { get; set; }
     
     public Workout() {}
 }

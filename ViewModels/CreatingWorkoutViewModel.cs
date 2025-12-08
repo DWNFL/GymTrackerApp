@@ -3,7 +3,7 @@ using GymTrackerApp.Services;
 
 namespace GymTrackerApp.ViewModels;
 
-public class CreatingWorkoutViewModel : ViewModelBase
+public class CreatingWorkoutViewModel
 {
     public WorkoutViewModel Workout { get; }
 
