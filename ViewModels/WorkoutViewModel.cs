@@ -1,8 +1,10 @@
 ﻿using GymTrackerApp.Models;
 using GymTrackerApp.Commands;
+using GymTrackerApp.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Threading;
+
 namespace GymTrackerApp.ViewModels;
 
 public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel>
@@ -14,6 +16,9 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
     public ObservableCollection<ExerciseViewModel> ExerciseDefinitions { get; }
     public BaseCommand StartAddExerciseCommand { get; } 
     public BaseCommand RemoveExerciseCommand { get; }
+    public BaseCommand FinishCommand { get; }
+    public BaseCommand DeleteCommand { get; }
+    
     public WorkoutViewModel(Workout workout, IEnumerable<Exercise> exerciseDefinitons)
     {
         _workout = workout;
@@ -49,6 +54,25 @@ public class WorkoutViewModel : CollectionHostViewModel<WorkoutExerciseViewModel
         {
             if (workoutExercise is WorkoutExerciseViewModel workoutExerciseViewModel)
                 RemoveExercise(workoutExerciseViewModel);
+        });
+        FinishCommand = new BaseCommand(_ =>
+        {
+            FinishWorkout();             // остановим таймер, зафиксируем Duration
+
+            var service = new JsonWorkoutService();
+            _ = service.SaveWorkoutAsync(_workout);   // простое сохранение в json
+        });
+        
+        DeleteCommand = new BaseCommand(_ =>
+        {
+            _workout.Exercises.Clear();
+            WorkoutExercises.Clear();
+
+            Name = string.Empty;
+            Date = DateTime.Now;
+            Duration = TimeSpan.Zero;
+
+            _startTime = DateTime.Now;
         });
 
     }
