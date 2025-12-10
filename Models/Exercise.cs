@@ -8,11 +8,9 @@ public class Exercise
 
     public MuscleGroup MuscleGroup { get; set; } = MuscleGroup.Other;
 
-    public string? Description { get; set; }
-
     public Exercise() { }
 
-    public Exercise(string name, MuscleGroup muscleGroup, string? description = null)
+    public Exercise(string name, MuscleGroup muscleGroup)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Название упражнения не может быть пустым.", nameof(name));
@@ -20,6 +18,5 @@ public class Exercise
         Id = Guid.NewGuid();
         Name = name;
         MuscleGroup = muscleGroup;
-        Description = description;
     }
 }

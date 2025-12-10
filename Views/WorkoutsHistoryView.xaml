@@ -32,7 +32,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="0 0 0 10" Padding="10" Background="#202020" CornerRadius="10">
+                    <Border Margin="0 0 0 10" Padding="10" Background="#202020">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -71,7 +71,6 @@
 
                             <TextBlock Grid.Row="2"
                                        Grid.Column="0"
-                                       Grid.ColumnSpan="2"
                                        Text="{Binding Description}"
                                        Foreground="#AAAAAA"
                                        TextTrimming="CharacterEllipsis"

@@ -76,30 +76,44 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Width="70" Text="Время" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Width="70" Text="Объем" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Width="70" Text="Сеты"  HorizontalAlignment="Center"/>
+            <!-- Время -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="Время"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentDuration, StringFormat={}{0:hh\\:mm\\:ss}}"
+                           FontSize="12"
+                           Margin="0,4,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
 
-            <TextBlock Grid.Row="1" Grid.Column="0"
-                       FontSize="12" Width="90"
-                       HorizontalAlignment="Center"
-                       Text="{Binding CurrentDuration, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+            <!-- Объём -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="Объём"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalWeight, StringFormat={}{0:N0}}"
+                           FontSize="12"
+                           Margin="0,4,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
 
-            <TextBlock Grid.Row="1" Grid.Column="1"
-                       FontSize="12" Width="90"
-                       HorizontalAlignment="Center"
-                       Text="{Binding TotalWeight, StringFormat={}{0:N0}}"/>
-
-            <TextBlock Grid.Row="1" Grid.Column="2"
-                       FontSize="12" Width="70"
-                       HorizontalAlignment="Center"
-                       Text="{Binding TotalSets}"/>
+            <!-- Сеты -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="Сеты"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalSets}"
+                           FontSize="12"
+                           Margin="0,4,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
         </Grid>
+
 
         <TextBlock Grid.Row="2"
                    Margin="20 10 20 0"

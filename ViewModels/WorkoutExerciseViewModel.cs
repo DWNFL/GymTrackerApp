@@ -76,7 +76,7 @@ public class WorkoutExerciseViewModel : CollectionHostViewModel<WorkoutSetViewMo
     {
         var setModel = new WorkoutSet
         {
-            Order = _exercise.Sets.Count + 1,
+            Order = Sets.Count + 1,
             Weight = 0,
             Reps = 0
         };
@@ -85,26 +85,26 @@ public class WorkoutExerciseViewModel : CollectionHostViewModel<WorkoutSetViewMo
 
         var setVm = new WorkoutSetViewModel(setModel);
         AddWithEvents(Sets, setVm, SetChanged);
-
-        OnPropertyChanged(nameof(Sets));
     }
 
     public void RemoveSet(WorkoutSetViewModel setViewModel)
     {
-        _exercise.Sets.Remove(setViewModel.Model);
+        var index = Sets.IndexOf(setViewModel);
+        if (index < 0) return;
+
+        _exercise.Sets.RemoveAt(index);
         RemoveWithEvents(Sets, setViewModel, SetChanged);
 
         RecalculateOrders();
-
-        OnPropertyChanged(nameof(Sets));
     }
+
 
     private void RecalculateOrders()
     {
-        for (int i = 0; i < _exercise.Sets.Count; i++)
+        for (int i = 0; i < Sets.Count; i++)
         {
+            Sets[i].Order = i + 1;        
             _exercise.Sets[i].Order = i + 1;
-            Sets[i].Order = i + 1;
         }
     }
 }

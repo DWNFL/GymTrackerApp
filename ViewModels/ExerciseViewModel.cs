@@ -33,19 +33,7 @@ public class ExerciseViewModel : ViewModelBase
             OnPropertyChanged(nameof(MuscleGroup));
         }
     }
-
-    public string? Description
-    {
-        get => _exercise.Description;
-        set
-        {
-            if (_exercise.Description != value)
-            {
-                _exercise.Description = value;
-                OnPropertyChanged(nameof(Description));
-            }
-        }
-    }
+    
     public Guid Id => _exercise.Id;
     
 }

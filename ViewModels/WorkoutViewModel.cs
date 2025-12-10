@@ -49,10 +49,10 @@ namespace GymTrackerApp.ViewModels
                 if (IsAddingExercise && value is ExerciseViewModel evm)
                 {
                     AddExerciseFromDefinition(evm);
-
+                    IsAddingExercise = false;
                     IsComboOpen = false;
-                    _selectedExercisePickerItem = null;
-                    OnPropertyChanged(nameof(SelectedExercisePickerItem));
+                    SelectedExercisePickerItem = null;
+                    return;
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace GymTrackerApp.ViewModels
 
             if (dlg.ShowDialog() != true)
             {
-                IsComboOpen = false;
+                IsAddingExercise = false;
                 return;
             }
 
@@ -319,8 +319,8 @@ namespace GymTrackerApp.ViewModels
 
             IsAddingExercise = false;
             IsComboOpen = false;
-        }
-
+            SelectedExercisePickerItem = null;
+        } 
         public double TotalWeight =>
             WorkoutExercises.Sum(e => e.Sets.Sum(s => s.Weight * s.Reps));
 
