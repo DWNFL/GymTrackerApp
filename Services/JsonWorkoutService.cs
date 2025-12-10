@@ -49,4 +49,21 @@ public class JsonWorkoutService : IWorkoutService
         var json = JsonSerializer.Serialize(workouts, _jsonOptions);
         await File.WriteAllTextAsync(_filePath, json);
     }
+    
+    public async Task DeleteWorkoutAsync(Guid id)
+    {
+        var dir = Path.GetDirectoryName(_filePath);
+        if (!string.IsNullOrWhiteSpace(dir))
+            Directory.CreateDirectory(dir);
+
+        var workouts = await GetWorkoutAsync();
+
+        var existing = workouts.FirstOrDefault(w => w.Id == id);
+        if (existing != null)
+            workouts.Remove(existing);
+
+        var json = JsonSerializer.Serialize(workouts, _jsonOptions);
+        await File.WriteAllTextAsync(_filePath, json);
+    }
+
 }

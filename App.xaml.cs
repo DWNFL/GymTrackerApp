@@ -46,17 +46,6 @@ public partial class App : Application
         var exercises = await exerciseService.GetExercisesAsync();
         var workouts = await workoutService.GetWorkoutAsync();
 
-        if (exercises.Count == 0 && workouts.Count == 0)
-        {
-            var (testExercises, testWorkouts) = TestDataFactory.Create();
-            exercises = testExercises;
-            workouts = testWorkouts;
-
-            await exerciseService.SaveExercisesAsync(exercises);
-            foreach (var w in workouts)
-                await workoutService.SaveWorkoutAsync(w);
-        }
-
         var knownIds = exercises.Select(x => x.Id).ToHashSet();
 
         var idsFromWorkouts = workouts
@@ -89,4 +78,5 @@ public partial class App : Application
         _exerciseStore.SetExercises(exercises);
         _workoutStore.SetWorkouts(workouts);
     }
+
 }

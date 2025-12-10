@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace GymTrackerApp;
+namespace GymTrackerApp.Services;
 
 public class BoolToVisibilityConverter : IValueConverter
 {

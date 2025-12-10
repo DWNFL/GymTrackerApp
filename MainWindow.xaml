@@ -16,8 +16,13 @@
                         Command="{Binding ShowHistoryCommand}"/>
 
                 <Button Content="Новая тренировка"
+                        Margin="0 0 10 0"
                         Padding="12,6"
                         Command="{Binding StartNewWorkoutCommand}"/>
+                
+                <Button Content="Прогресс"
+                        Padding="12,6"
+                        Command="{Binding ShowProgressCommand}"/>
             </StackPanel>
         </Border>
 

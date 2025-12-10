@@ -9,11 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Page Update="Views\TestWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
+        <PackageReference Include="LiveCharts" Version="0.9.7" />
+        <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     </ItemGroup>
+
+
 
 </Project>

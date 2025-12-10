@@ -39,10 +39,12 @@ public class WorkoutsHistoryViewModel : ViewModelBase
             if (param is not WorkoutViewModel wvm) return;
 
             var workoutModel = wvm.Model;
-
+            
             var detailsVm = new WorkoutViewModel(
                 workoutModel,
                 _exerciseStore.Exercises,
+                workoutStore: _workoutStore,
+                onFinished: null,
                 startTimer: false,
                 exerciseStore: _exerciseStore,
                 isReadOnly: true);

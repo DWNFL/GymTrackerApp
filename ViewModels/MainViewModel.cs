@@ -11,6 +11,7 @@ public class MainViewModel : ViewModelBase
 
     private ViewModelBase _currentViewModel;
     public ViewModelBase CurrentViewModel
+    
     {
         get => _currentViewModel;
         private set
@@ -22,6 +23,8 @@ public class MainViewModel : ViewModelBase
 
     public BaseCommand ShowHistoryCommand { get; }
     public BaseCommand StartNewWorkoutCommand { get; }
+    
+    public BaseCommand ShowProgressCommand { get; }
 
     public MainViewModel(WorkoutStore workoutStore, ExerciseStore exerciseStore)
     {
@@ -30,6 +33,7 @@ public class MainViewModel : ViewModelBase
 
         ShowHistoryCommand = new BaseCommand(_ => ShowHistory());
         StartNewWorkoutCommand = new BaseCommand(_ => StartNewWorkout());
+        ShowProgressCommand = new BaseCommand(_ => ShowProgress());
 
         ShowHistory();
     }
@@ -49,4 +53,9 @@ public class MainViewModel : ViewModelBase
             startTimer: true,
             exerciseStore: _exerciseStore);
     }
+    private void ShowProgress()
+    {
+        CurrentViewModel = new ProgressViewModel(_workoutStore);
+    }
 }
+

@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:GymTrackerApp"
              xmlns:vm="clr-namespace:GymTrackerApp.ViewModels"
-             xmlns:views="clr-namespace:GymTrackerApp.Views">
+             xmlns:views="clr-namespace:GymTrackerApp.Views"
+             xmlns:services="clr-namespace:GymTrackerApp.Services">
     <Application.Resources>
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <services:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
 
         <Style x:Key="Header" TargetType="TextBlock">
             <Setter Property="FontSize" Value="30"/>
@@ -22,5 +23,10 @@
         <DataTemplate DataType="{x:Type vm:WorkoutViewModel}">
             <views:WorkoutView/>
         </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type vm:ProgressViewModel}">
+            <views:ProgressView/>
+        </DataTemplate>
+        
     </Application.Resources>
 </Application>

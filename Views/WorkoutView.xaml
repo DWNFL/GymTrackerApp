@@ -8,7 +8,6 @@
              d:DesignHeight="400" d:DesignWidth="600">
 
     <UserControl.Resources>
-        <!-- Пункт сверху: кнопка "Добавить своё упражнение" -->
         <DataTemplate DataType="{x:Type vm:AddCustomExercisePickerItem}">
             <Button Content="➕ Добавить своё упражнение"
                     Padding="10,6"
@@ -18,7 +17,6 @@
                                       RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         </DataTemplate>
 
-        <!-- Обычные упражнения -->
         <DataTemplate DataType="{x:Type vm:ExerciseViewModel}">
             <StackPanel>
                 <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
@@ -32,10 +30,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Кнопки -->
         <Button Grid.Row="0"
                 Content="Удалить"
                 Padding="10,5"
@@ -72,7 +70,6 @@
             </Button.Style>
         </Button>
 
-        <!-- Статистика -->
         <Grid Grid.Row="1" Margin="0 20 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -104,14 +101,18 @@
                        Text="{Binding TotalSets}"/>
         </Grid>
 
-        <Separator Grid.Row="2" Margin="15 15"/>
+        <TextBlock Grid.Row="2"
+                   Margin="20 10 20 0"
+                   Text="{Binding Description}"
+                   TextWrapping="Wrap"
+                   Foreground="Gray"/>
 
-        <!-- Контент -->
-        <Grid Grid.Row="3">
+        <Separator Grid.Row="3" Margin="15 15"/>
+
+        <Grid Grid.Row="4">
             <ScrollViewer>
                 <StackPanel>
 
-                    <!-- Упражнения тренировки -->
                     <ItemsControl ItemsSource="{Binding WorkoutExercises}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -209,7 +210,6 @@
 
                                     <Separator Margin="20 0 40 5"/>
 
-                                    <!-- Сеты -->
                                     <ItemsControl ItemsSource="{Binding Sets}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -311,7 +311,6 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <!-- ✅ Нормальное добавление упражнения: НЕ пересоздаем ComboBox -->
                     <Grid Margin="30 10 30 20">
                         <Button Content="Добавить упражнение"
                                 Height="30"
