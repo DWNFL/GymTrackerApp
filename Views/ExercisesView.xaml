@@ -1,0 +1,101 @@
+﻿<UserControl x:Class="GymTrackerApp.Views.ExercisesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:GymTrackerApp.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:ExercisesViewModel}"
+             d:DesignHeight="400" d:DesignWidth="600"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:models="clr-namespace:GymTrackerApp.Models"
+             xmlns:services="clr-namespace:GymTrackerApp.Services">
+    <UserControl.Resources>
+        <services:MuscleGroupToRussianConverter x:Key="MuscleGroupToRussianConverter"/>
+        <ObjectDataProvider x:Key="MuscleGroups"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:MuscleGroup"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Типы упражнений"
+                   FontSize="22"
+                   Margin="0,0,0,10"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Список упражнений -->
+            <ListBox Grid.Column="0"
+                     ItemsSource="{Binding Exercises}"
+                     SelectedItem="{Binding SelectedExercise, Mode=TwoWay}"
+                     DisplayMemberPath="Name"
+                     Margin="0,0,10,0"/>
+
+            <!-- Детали -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBlock Text="Название"/>
+                    <TextBox Text="{Binding SelectedExercise.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                    <TextBlock Text="Группа мышц"/>
+                    <ComboBox ItemsSource="{Binding Source={StaticResource MuscleGroups}}"
+                              SelectedItem="{Binding SelectedExercise.MuscleGroupEnum, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource MuscleGroupToRussianConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="Описание"/>
+                    <TextBox Text="{Binding SelectedExercise.Description, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             MinHeight="80"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,0,0">
+            <Button Content="Добавить"
+                    Command="{Binding AddExerciseCommand}"
+                    Margin="0,0,8,0"/>
+            <Button Content="Удалить"
+                    Command="{Binding DeleteExerciseCommand}"
+                    Margin="0,0,8,0"/>
+            <Button Content="Сохранить"
+                    Command="{Binding SaveCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

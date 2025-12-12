@@ -2,12 +2,21 @@
     public enum MuscleGroup
     {
         Chest,
-        Back,
-        Legs,
-        Shoulders,
-        Arms,
+        BroadestBack,
+        RoundBack,
+        Quadriceps,
+        LegBiceps,
+        AnteriorDelta,
+        MiddleDelta,
+        BackDelta,
+        Biceps,
+        Triceps,
         Core,
+        Calf,
+        Soleous,
         FullBody,
+        Buttocks,
+        Trapezoids,
         Other
     }
 public static class MuscleGroupExtensions
@@ -16,11 +25,20 @@ public static class MuscleGroupExtensions
         group switch
         {
             MuscleGroup.Chest => "Грудь",
-            MuscleGroup.Back => "Спина",
-            MuscleGroup.Legs => "Ноги",
-            MuscleGroup.Shoulders => "Плечи",
-            MuscleGroup.Arms => "Руки",
+            MuscleGroup.BroadestBack => "Широчайшие мышцы спины",
+            MuscleGroup.RoundBack => "Круглые мышцы спины",
+            MuscleGroup.Quadriceps => "Квадрицепс",
+            MuscleGroup.LegBiceps => "Бицепс бедра",
+            MuscleGroup.AnteriorDelta => "Переденяя дельта",
+            MuscleGroup.BackDelta => "Задняя дельта",
+            MuscleGroup.MiddleDelta => "Средняя дельта",
+            MuscleGroup.Biceps => "Бицепс",
+            MuscleGroup.Triceps => "Трицепс",
+            MuscleGroup.Calf => "Икры",
+            MuscleGroup.Soleous => "Камбаловидная мышца",
             MuscleGroup.Core => "Кор",
+            MuscleGroup.Buttocks => "Ягодицы",
+            MuscleGroup.Trapezoids => "Трапеции",
             MuscleGroup.FullBody => "Все тело",
             _ => "Другое"
         };
@@ -28,13 +46,22 @@ public static class MuscleGroupExtensions
     public static MuscleGroup FromRussian(string name) =>
         name switch
         {
-            "Грудь" => MuscleGroup.Chest,
-            "Спина" => MuscleGroup.Back,
-            "Ноги" => MuscleGroup.Legs,
-            "Плечи" => MuscleGroup.Shoulders,
-            "Руки" => MuscleGroup.Arms,
-            "Кор" => MuscleGroup.Core,
-            "Все тело" => MuscleGroup.FullBody,
+              "Грудь" => MuscleGroup.Chest,
+              "Широчайшие мышцы спины" => MuscleGroup.BroadestBack,
+              "Круглые мышцы спины" => MuscleGroup.RoundBack,
+              "Квадрицепс" => MuscleGroup.Quadriceps,
+              "Бицепс бедра" => MuscleGroup.LegBiceps,
+              "Переденяя дельта" => MuscleGroup.AnteriorDelta,
+              "Задняя дельта" => MuscleGroup.BackDelta,
+              "Средняя дельта" => MuscleGroup.MiddleDelta,
+              "Бицепс" => MuscleGroup.Biceps,
+              "Трицепс" => MuscleGroup.Triceps,
+              "Икры" => MuscleGroup.Calf,
+              "Камбаловидная мышца" => MuscleGroup.Soleous,
+              "Кор" => MuscleGroup.Core,
+              "Ягодицы" => MuscleGroup.Buttocks,
+              "Трапеции" => MuscleGroup.Trapezoids,
+              "Все тело" => MuscleGroup.FullBody,
             _ => MuscleGroup.Other
         };
 }

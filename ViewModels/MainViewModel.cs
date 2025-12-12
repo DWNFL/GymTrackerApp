@@ -11,7 +11,6 @@ public class MainViewModel : ViewModelBase
 
     private ViewModelBase _currentViewModel;
     public ViewModelBase CurrentViewModel
-    
     {
         get => _currentViewModel;
         private set
@@ -23,17 +22,18 @@ public class MainViewModel : ViewModelBase
 
     public BaseCommand ShowHistoryCommand { get; }
     public BaseCommand StartNewWorkoutCommand { get; }
-    
+    public BaseCommand ShowExercisesCommand { get; }
     public BaseCommand ShowProgressCommand { get; }
 
     public MainViewModel(WorkoutStore workoutStore, ExerciseStore exerciseStore)
     {
-        _workoutStore = workoutStore;
-        _exerciseStore = exerciseStore;
+        _workoutStore = workoutStore ?? throw new ArgumentNullException(nameof(workoutStore));
+        _exerciseStore = exerciseStore ?? throw new ArgumentNullException(nameof(exerciseStore));
 
-        ShowHistoryCommand = new BaseCommand(_ => ShowHistory());
-        StartNewWorkoutCommand = new BaseCommand(_ => StartNewWorkout());
-        ShowProgressCommand = new BaseCommand(_ => ShowProgress());
+        ShowHistoryCommand      = new BaseCommand(_ => ShowHistory());
+        StartNewWorkoutCommand  = new BaseCommand(_ => StartNewWorkout());
+        ShowExercisesCommand    = new BaseCommand(_ => ShowExercises());
+        ShowProgressCommand     = new BaseCommand(_ => ShowProgress());
 
         ShowHistory();
     }
@@ -45,17 +45,25 @@ public class MainViewModel : ViewModelBase
 
     private void StartNewWorkout()
     {
+        var workout = new Workout { Date = DateTime.Now };
+
         CurrentViewModel = new WorkoutViewModel(
-            new Workout { Date = DateTime.Now },
+            workout,
             _exerciseStore.Exercises,
             workoutStore: _workoutStore,
             onFinished: ShowHistory,
             startTimer: true,
-            exerciseStore: _exerciseStore);
+            exerciseStore: _exerciseStore,
+            isReadOnly: false);
     }
+
+    private void ShowExercises()
+    {
+        CurrentViewModel = new ExercisesViewModel(_exerciseStore);
+    }
+
     private void ShowProgress()
     {
         CurrentViewModel = new ProgressViewModel(_workoutStore);
     }
 }
-
