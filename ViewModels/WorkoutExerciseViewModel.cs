@@ -54,19 +54,6 @@ public class WorkoutExerciseViewModel : CollectionHostViewModel<WorkoutSetViewMo
         }
     }
 
-    public string? Note
-    {
-        get => _exercise.Note;
-        set
-        {
-            if (_exercise.Note != value)
-            {
-                _exercise.Note = value;
-                OnPropertyChanged(nameof(Note));
-            }
-        }
-    }
-
     private void SetChanged(object? sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(nameof(Sets));

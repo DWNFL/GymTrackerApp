@@ -6,5 +6,4 @@ public class WorkoutExercise
     public Guid ExercisesId { get; set; }
     public List<WorkoutSet> Sets { get; set; } = new();
 
-    public string? Note { get; set; }
 }
