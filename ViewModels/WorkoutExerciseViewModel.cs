@@ -44,7 +44,7 @@ public class WorkoutExerciseViewModel : CollectionHostViewModel<WorkoutSetViewMo
         get => _exerciseDefinition;
         set
         {
-            if (value is null) return; // <- фикс твоего NullReferenceException
+            if (value is null) return; 
             if (ReferenceEquals(_exerciseDefinition, value)) return;
 
             _exerciseDefinition = value;
